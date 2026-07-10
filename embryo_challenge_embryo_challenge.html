@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>120小时胚胎守护挑战</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+<style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        @keyframes cell-split {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.1, 0.9); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+        .bg-main-gradient {
+            background: linear-gradient(180deg, #E0F7FA 0%, #FCE4EC 100%);
+        }
+        .embryo-shadow {
+            box-shadow: 0 10px 25px -5px rgba(255, 107, 157, 0.3);
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen font-sans selection:bg-pink-200 overflow-hidden">
+<!-- 移动端容器 -->
+<div class="relative w-[375px] h-[812px] bg-main-gradient overflow-hidden shadow-2xl flex flex-col" id="app-container">
+<!-- 装饰性背景元素 -->
+<div class="absolute top-10 left-10 text-pink-300 opacity-40 animate-float">
+<iconify-icon icon="mingcute:star-fill" width="24"></iconify-icon>
+</div>
+<div class="absolute top-40 right-10 text-teal-300 opacity-40 animate-float" style="animation-delay: 1s;">
+<iconify-icon icon="mingcute:bling-fill" width="32"></iconify-icon>
+</div>
+<div class="absolute bottom-20 left-20 text-yellow-300 opacity-30 animate-float" style="animation-delay: 2s;">
+<iconify-icon icon="mingcute:bubble-fill" width="28"></iconify-icon>
+</div>
+<!-- 顶部状态栏 (模拟) -->
+<div class="flex-none px-6 pt-4 flex justify-between items-center z-20">
+<div class="bg-white/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/50 flex items-center gap-2" id="countdown-wrap">
+<iconify-icon class="text-pink-500" icon="mingcute:time-line"></iconify-icon>
+<span class="font-bold text-pink-600 tabular-nums" id="global-timer">120:00</span>
+</div>
+<div class="flex gap-1" id="progress-dots">
+<div class="w-8 h-2 rounded-full bg-gray-300 transition-all duration-300" data-step="1"></div>
+<div class="w-8 h-2 rounded-full bg-gray-300 transition-all duration-300" data-step="2"></div>
+<div class="w-8 h-2 rounded-full bg-gray-300 transition-all duration-300" data-step="3"></div>
+<div class="w-8 h-2 rounded-full bg-gray-300 transition-all duration-300" data-step="4"></div>
+</div>
+</div>
+<!-- 场景容器 -->
+<main class="flex-1 relative z-10 px-6 py-4">
+<!-- 场景0：首页 -->
+<div class="scene h-full flex flex-col items-center justify-center text-center" id="scene-home">
+<div class="relative mb-8">
+<div class="w-48 h-48 bg-white/40 rounded-full flex items-center justify-center animate-pulse-soft">
+<img alt="Cute cartoon embryo with big eyes and a smile" class="w-40 h-40 object-contain" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/6651c822fa454ac3becb11fbe07bbc61.jpg"/>
+</div>
+<div class="absolute -top-4 -right-4 bg-[#FFE66D] p-3 rounded-2xl shadow-lg rotate-12">
+<span class="text-xs font-bold text-gray-700">胚胎学家</span>
+</div>
+</div>
+<h1 class="text-4xl font-black text-[#FF6B9D] mb-2 tracking-tight">120小时</h1>
+<h2 class="text-2xl font-bold text-gray-700 mb-6">胚胎守护挑战</h2>
+<button class="group relative px-10 py-4 bg-[#FF6B9D] text-white text-xl font-bold rounded-full shadow-xl hover:scale-105 transition-transform active:scale-95 overflow-hidden" onclick="switchPage('scene-intro')">
+<div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
+                    开始挑战
+                </button>
+<p class="mt-4 text-gray-500 text-sm opacity-80">模拟胚胎学家120小时守护之旅</p>
+</div>
+<!-- 场景1：引导转场 -->
+<div class="scene hidden h-full flex flex-col items-center justify-center" id="scene-intro">
+<div class="bg-white/80 backdrop-blur-lg p-8 rounded-[40px] shadow-xl border border-white relative">
+<div class="text-xl leading-relaxed text-gray-700 font-medium mb-8 min-h-[120px]" id="typewriter">
+<!-- 打字机文本由JS注入 -->
+</div>
+<button class="w-full py-4 bg-[#4ECDC4] text-white text-lg font-bold rounded-2xl shadow-lg active:scale-95 transition-all" onclick="startTask1()">
+                        准备好了
+                    </button>
+</div>
+</div>
+<!-- 场景2：任务一 - 第一次卵裂 -->
+<div class="scene hidden h-full flex flex-col items-center pt-10" id="scene-task1">
+<div class="text-center mb-8">
+<h3 class="text-xl font-bold text-gray-700">任务一：第一次卵裂观测</h3>
+<p class="text-sm text-gray-500">点击显微镜观察细胞分裂情况</p>
+</div>
+<div class="relative w-64 h-64 bg-white/40 rounded-full border-4 border-white/60 flex items-center justify-center mb-10 overflow-hidden" id="microscope-view">
+<!-- 初始单个细胞 -->
+<div class="relative flex items-center justify-center gap-0 transition-all duration-1000" id="cell-container">
+<div class="w-20 h-20 bg-pink-400 rounded-full border-4 border-white embryo-shadow flex items-center justify-center z-10 transition-all duration-1000" id="cell-1">
+<div class="w-8 h-8 bg-white/30 rounded-full"></div>
+</div>
+<div class="w-0 h-20 bg-pink-400 rounded-full border-4 border-white embryo-shadow flex items-center justify-center opacity-0 transition-all duration-1000" id="cell-2">
+<div class="w-8 h-8 bg-white/30 rounded-full"></div>
+</div>
+</div>
+</div>
+<button class="px-8 py-4 bg-[#6C5CE7] text-white font-bold rounded-2xl flex items-center gap-2 shadow-lg active:scale-95" id="btn-observe" onclick="runCellSplit()">
+<iconify-icon icon="mingcute:microscope-line"></iconify-icon>
+                    观察细胞分裂
+                </button>
+</div>
+<!-- 场景3：任务二 - 关键检测 -->
+<div class="scene hidden h-full flex flex-col items-center pt-6" id="scene-task2">
+<div class="text-center mb-4">
+<h3 class="text-xl font-bold text-gray-700">任务二：发育关键检测</h3>
+<p class="text-sm text-gray-500">迅速找出其中发育异常的胚胎！</p>
+</div>
+<!-- 5秒计时条 -->
+<div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-8 border border-white">
+<div class="w-full h-full bg-green-400 transition-all duration-100 linear" id="task2-timer-bar"></div>
+</div>
+<div class="grid grid-cols-2 gap-6 w-full px-4" id="embryo-grid">
+<!-- 胚胎A -->
+<div class="bg-white/60 p-4 rounded-3xl border-2 border-transparent transition-all flex flex-col items-center gap-2" onclick="checkEmbryo(false, this)">
+<img alt="Normal pink embryo smiling" class="w-20 h-20" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/1c3cf95d52004087a6b667e2a3165bd5.jpg"/>
+<span class="text-xs font-bold text-gray-500">胚胎 A</span>
+</div>
+<!-- 胚胎B -->
+<div class="bg-white/60 p-4 rounded-3xl border-2 border-transparent transition-all flex flex-col items-center gap-2" onclick="checkEmbryo(false, this)">
+<img alt="Normal pink embryo smiling" class="w-20 h-20" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/1c3cf95d52004087a6b667e2a3165bd5.jpg"/>
+<span class="text-xs font-bold text-gray-500">胚胎 B</span>
+</div>
+<!-- 胚胎C -->
+<div class="bg-white/60 p-4 rounded-3xl border-2 border-transparent transition-all flex flex-col items-center gap-2" onclick="checkEmbryo(false, this)">
+<img alt="Normal pink embryo smiling" class="w-20 h-20" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/1c3cf95d52004087a6b667e2a3165bd5.jpg"/>
+<span class="text-xs font-bold text-gray-500">胚胎 C</span>
+</div>
+<!-- 胚胎D (异常) -->
+<div class="bg-white/60 p-4 rounded-3xl border-2 border-transparent transition-all flex flex-col items-center gap-2" id="abnormal-embryo" onclick="checkEmbryo(true, this)">
+<img alt="Abnormal purple embryo with frown and spots" class="w-20 h-20 grayscale-[0.3]" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/c543114b8fab4643baf4dc759647cf70.jpg"/>
+<span class="text-xs font-bold text-purple-600">胚胎 D</span>
+</div>
+</div>
+</div>
+<!-- 场景4：任务三 - 囊胚选择 -->
+<div class="scene hidden h-full flex flex-col items-center pt-6" id="scene-task3">
+<div class="text-center mb-6">
+<h3 class="text-xl font-bold text-gray-700">任务三：囊胚培养与选择</h3>
+<p class="text-sm text-gray-500">请选择最有活力的囊胚进行移植</p>
+</div>
+<div class="space-y-4 w-full px-2">
+<!-- 囊胚A (最优) -->
+<div class="blastocyst-card bg-white/70 p-4 rounded-[32px] border-4 border-transparent flex items-center gap-4 transition-all hover:bg-white active:scale-95 cursor-pointer" onclick="selectBlastocyst('A', this)">
+<div class="w-20 h-20 bg-pink-100 rounded-2xl flex items-center justify-center relative overflow-hidden">
+<img alt="Vibrant blastocyst glowing brightly" class="w-16 h-16 animate-pulse-soft" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/fe750cc143e94266b6f44b3835c22d30.jpg"/>
+</div>
+<div class="flex-1">
+<div class="font-bold text-gray-700 text-lg">囊胚 A</div>
+<div class="flex text-yellow-400 mt-1">
+<iconify-icon icon="mingcute:star-fill"></iconify-icon>
+<iconify-icon icon="mingcute:star-fill"></iconify-icon>
+<iconify-icon icon="mingcute:star-fill"></iconify-icon>
+</div>
+<div class="text-xs text-gray-400 mt-1">活力指数：极高</div>
+</div>
+</div>
+<!-- 囊胚B -->
+<div class="blastocyst-card bg-white/70 p-4 rounded-[32px] border-4 border-transparent flex items-center gap-4 transition-all hover:bg-white active:scale-95 cursor-pointer" onclick="selectBlastocyst('B', this)">
+<div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center">
+<img alt="Average blastocyst with moderate glow" class="w-16 h-16 opacity-70" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/fa30fc263d914e5fb4ba6073b3e9a5a6.jpg"/>
+</div>
+<div class="flex-1">
+<div class="font-bold text-gray-700 text-lg">囊胚 B</div>
+<div class="flex text-yellow-400 mt-1">
+<iconify-icon icon="mingcute:star-fill"></iconify-icon>
+<iconify-icon icon="mingcute:star-fill"></iconify-icon>
+<iconify-icon icon="mingcute:star-line"></iconify-icon>
+</div>
+<div class="text-xs text-gray-400 mt-1">活力指数：中等</div>
+</div>
+</div>
+<!-- 囊胚C -->
+<div class="blastocyst-card bg-white/70 p-4 rounded-[32px] border-4 border-transparent flex items-center gap-4 transition-all hover:bg-white active:scale-95 cursor-pointer" onclick="selectBlastocyst('C', this)">
+<div class="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center">
+<img alt="Weak blastocyst with dim glow" class="w-16 h-16 opacity-50" src="https://modao.cc/agent-py/media/generated_images/2026-07-10/968b782639ed4852a5514d30cc5fd057.jpg"/>
+</div>
+<div class="flex-1">
+<div class="font-bold text-gray-700 text-lg">囊胚 C</div>
+<div class="flex text-yellow-400 mt-1">
+<iconify-icon icon="mingcute:star-fill"></iconify-icon>
+<iconify-icon icon="mingcute:star-line"></iconify-icon>
+<iconify-icon icon="mingcute:star-line"></iconify-icon>
+</div>
+<div class="text-xs text-gray-400 mt-1">活力指数：一般</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 场景5：结果页 -->
+<div class="scene hidden h-full flex flex-col items-center pt-4 overflow-y-auto pb-10" id="scene-result">
+<div class="text-center mb-6">
+<h1 class="text-3xl font-black text-pink-500 mb-1">🎉 守护成功！</h1>
+<p class="text-gray-600 font-medium">你成功守护了一枚胚胎的120小时！</p>
+</div>
+<!-- 统计卡片 -->
+<div class="bg-white/90 w-full rounded-[32px] p-6 shadow-xl mb-6 space-y-4 border border-white">
+<div class="flex justify-between items-center py-2 border-b border-gray-100">
+<span class="text-gray-500 flex items-center gap-2"><iconify-icon class="text-blue-400" icon="mingcute:time-fill"></iconify-icon> 守护时长</span>
+<span class="font-bold text-gray-700">120 小时</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-gray-100">
+<span class="text-gray-500 flex items-center gap-2"><iconify-icon class="text-pink-400" icon="mingcute:cell-fill"></iconify-icon> 细胞分裂</span>
+<span class="font-bold text-gray-700">1→2→4→囊胚</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-gray-100">
+<span class="text-gray-500 flex items-center gap-2"><iconify-icon class="text-teal-400" icon="mingcute:check-circle-fill"></iconify-icon> 异常检测</span>
+<span class="font-bold text-gray-700">成功识别</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-gray-500 flex items-center gap-2"><iconify-icon class="text-yellow-400" icon="mingcute:award-fill"></iconify-icon> 移植选择</span>
+<span class="font-bold text-gray-700">优质囊胚</span>
+</div>
+</div>
+<!-- 海报区域 -->
+<div class="w-full aspect-[3/4] bg-gradient-to-br from-[#FF6B9D] to-[#6C5CE7] rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl mb-8" id="poster">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div>
+<div class="text-xs font-bold bg-white/20 inline-block px-3 py-1 rounded-full mb-4">EMBRYOLOGIST CHALLENGE</div>
+<h2 class="text-2xl font-black leading-tight">我完成了<br/>120小时胚胎守护挑战</h2>
+</div>
+<div class="flex flex-col gap-4">
+<div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+<iconify-icon icon="mingcute:thumb-up-fill" width="32"></iconify-icon>
+</div>
+<p class="text-sm leading-relaxed opacity-90">
+                                向每一位默默守护生命的胚胎学家致敬。<br/>
+                                每一个生命的最初120小时，都有他们在实验室里的悉心守护。
+                            </p>
+<div class="border-t border-white/30 pt-4 flex justify-between items-center">
+<span class="text-[10px] tracking-widest uppercase">2026-07-10 守护者认证</span>
+<iconify-icon icon="mingcute:qr-code-line" width="24"></iconify-icon>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full py-5 bg-[#FF6B9D] text-white text-xl font-bold rounded-3xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all" onclick="location.reload()">
+<iconify-icon icon="mingcute:refresh-3-line"></iconify-icon>
+                    再来一次
+                </button>
+</div>
+</main>
+<!-- 弹窗图层 -->
+<div class="absolute inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden items-center justify-center p-8" id="modal-overlay">
+<div class="bg-white rounded-[40px] p-8 w-full shadow-2xl transform transition-all duration-300 scale-90 opacity-0" id="modal-content">
+<div class="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-3xl text-white" id="modal-icon">
+<iconify-icon icon="mingcute:celebrate-line" width="40"></iconify-icon>
+</div>
+<h4 class="text-2xl font-black text-center text-gray-800 mb-4" id="modal-title">标题加载中...</h4>
+<p class="text-gray-500 text-center leading-relaxed mb-8" id="modal-body">内容加载中...</p>
+<button class="w-full py-4 rounded-2xl text-white font-bold shadow-lg active:scale-95 transition-all" id="modal-btn">
+                    继续
+                </button>
+</div>
+</div>
+<!-- 撒花层 -->
+<div class="absolute inset-0 pointer-events-none z-[110] overflow-hidden" id="confetti-container"></div>
+</div>
+<script>
+        let currentStep = 0;
+        let timeLeft = 120;
+        let task2Timer = null;
+
+        function updateProgress(step) {
+            currentStep = step;
+            const dots = document.querySelectorAll('#progress-dots > div');
+            dots.forEach((dot, idx) => {
+                if (idx < step) {
+                    dot.classList.remove('bg-gray-300');
+                    dot.classList.add('bg-[#4ECDC4]');
+                } else {
+                    dot.classList.add('bg-gray-300');
+                    dot.classList.remove('bg-[#4ECDC4]');
+                }
+            });
+            // 倒计时减少
+            if (step > 1) {
+                timeLeft -= 30;
+                if (timeLeft < 0) timeLeft = 0;
+                document.getElementById('global-timer').textContent = `${timeLeft}:00`;
+            }
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.scene').forEach(s => s.classList.add('hidden'));
+            const target = document.getElementById(pageId);
+            target.classList.remove('hidden');
+            
+            if (pageId === 'scene-intro') {
+                typewriterEffect("在接下来的120小时里，你将扮演一名胚胎学家，守护一枚胚胎的诞生。准备好了吗？");
+            }
+        }
+
+        function typewriterEffect(text) {
+            const el = document.getElementById('typewriter');
+            el.innerHTML = "";
+            let i = 0;
+            const timer = setInterval(() => {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, 50);
+        }
+
+        function showModal(config) {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            const iconWrap = document.getElementById('modal-icon');
+            
+            document.getElementById('modal-title').textContent = config.title;
+            document.getElementById('modal-body').textContent = config.body;
+            document.getElementById('modal-btn').textContent = config.btnText || "继续";
+            document.getElementById('modal-btn').style.backgroundColor = config.btnColor || "#FF6B9D";
+            iconWrap.style.backgroundColor = config.btnColor || "#FF6B9D";
+            
+            const btn = document.getElementById('modal-btn');
+            btn.onclick = () => {
+                hideModal();
+                if (config.onClose) config.onClose();
+            };
+
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function hideModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }, 300);
+        }
+
+        // 任务一逻辑
+        function startTask1() {
+            switchPage('scene-task1');
+            updateProgress(1);
+        }
+
+        function runCellSplit() {
+            const btn = document.getElementById('btn-observe');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            
+            const cell1 = document.getElementById('cell-1');
+            const cell2 = document.getElementById('cell-2');
+            const container = document.getElementById('cell-container');
+
+            cell1.style.animation = "cell-split 1s ease-in-out";
+            
+            setTimeout(() => {
+                container.classList.add('gap-4');
+                cell2.classList.remove('w-0', 'opacity-0');
+                cell2.classList.add('w-20');
+            }, 500);
+
+            setTimeout(() => {
+                showModal({
+                    title: "✨ 第一次卵裂成功！",
+                    body: "胚胎从1个细胞变为2个。受精卵开始第一次分裂，这是生命旅程的第一步。",
+                    btnColor: "#6C5CE7",
+                    onClose: startTask2
+                });
+            }, 1800);
+        }
+
+        // 任务二逻辑
+        function startTask2() {
+            switchPage('scene-task2');
+            updateProgress(2);
+            
+            const bar = document.getElementById('task2-timer-bar');
+            bar.style.width = '100%';
+            
+            let width = 100;
+            task2Timer = setInterval(() => {
+                width -= 2;
+                bar.style.width = width + '%';
+                if (width <= 40) bar.classList.replace('bg-green-400', 'bg-yellow-400');
+                if (width <= 15) bar.classList.replace('bg-yellow-400', 'bg-red-400');
+                
+                if (width <= 0) {
+                    clearInterval(task2Timer);
+                    handleTask2Timeout();
+                }
+            }, 100);
+        }
+
+        function checkEmbryo(isCorrect, el) {
+            if (!task2Timer) return;
+
+            if (isCorrect) {
+                clearInterval(task2Timer);
+                task2Timer = null;
+                el.classList.add('border-green-500', 'bg-green-50');
+                showModal({
+                    title: "🎉 识别成功！",
+                    body: "你成功识别了异常！这正是胚胎学家工作中最关键的一环，确保每一个被植入的胚胎都是健康的。",
+                    btnColor: "#4ECDC4",
+                    onClose: startTask3
+                });
+            } else {
+                el.style.animation = "shake 0.4s ease-in-out";
+                setTimeout(() => el.style.animation = "", 400);
+                // 提示文案
+                const p = document.querySelector('#scene-task2 p');
+                p.textContent = "再仔细观察一下！";
+                p.classList.add('text-red-400');
+            }
+        }
+
+        function handleTask2Timeout() {
+            task2Timer = null;
+            const target = document.getElementById('abnormal-embryo');
+            target.classList.add('border-red-500', 'bg-red-50');
+            showModal({
+                title: "时间到！",
+                body: "这个胚胎显示染色体异常信号，观察时一定要细心哦。",
+                btnColor: "#94a3b8",
+                onClose: startTask3
+            });
+        }
+
+        // 任务三逻辑
+        function startTask3() {
+            switchPage('scene-task3');
+            updateProgress(3);
+        }
+
+        function selectBlastocyst(type, el) {
+            document.querySelectorAll('.blastocyst-card').forEach(c => c.classList.remove('border-pink-500', 'bg-white'));
+            
+            if (type === 'A') {
+                el.classList.add('border-pink-500', 'bg-white');
+                setTimeout(() => {
+                    showModal({
+                        title: "🌟 完美的守护！",
+                        body: "你选择了最优质的囊胚！移植成功！生命的力量在这一刻悄然萌发。",
+                        btnColor: "#FF6B9D",
+                        onClose: showFinalResult
+                    });
+                }, 500);
+            } else {
+                el.classList.add('border-gray-300');
+                const p = document.querySelector('#scene-task3 p');
+                p.textContent = "这个囊胚活力一般，再选一个吧～";
+                p.classList.add('text-orange-400');
+            }
+        }
+
+        // 结果页逻辑
+        function showFinalResult() {
+            switchPage('scene-result');
+            updateProgress(4);
+            createConfetti();
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#FF6B9D', '#4ECDC4', '#FFE66D', '#6C5CE7', '#ffffff'];
+            for (let i = 0; i < 60; i++) {
+                const confetto = document.createElement('div');
+                confetto.className = 'confetti';
+                confetto.style.left = Math.random() * 100 + '%';
+                confetto.style.top = '-10%';
+                confetto.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetto.style.width = (Math.random() * 8 + 4) + 'px';
+                confetto.style.height = (Math.random() * 8 + 4) + 'px';
+                confetto.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                container.appendChild(confetto);
+
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                
+                confetto.animate([
+                    { transform: `translate3d(0, 0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate3d(${(Math.random() - 0.5) * 200}px, 800px, 0) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    delay: delay * 1000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    fill: 'forwards'
+                });
+            }
+        }
+
+        // 初始化
+        window.onload = () => {
+            // 设置初始UI状态
+        };
+    </script>
+</body>
+</html>
